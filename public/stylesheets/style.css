@@ -1,0 +1,31 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.table>thead>tr>th {
+	background-color: #DAA520;
+	color: whitesmoke;
+}
+
+.table-striped>tbody>tr:nth-child(odd)>td {
+	background-color: white;
+	color: #333; 
+}
+
+.table-striped>tbody>tr:nth-child(even)>td {
+	background-color: #EEE8AA;
+	color: #333;
+}
+
+#overlay { 
+  display:none; 
+  position:relative; 
+  background:#fff;
+  float: none;
+}
+

@@ -1,0 +1,72 @@
+<!-- views/pages/index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <% include ./partials/head %>
+  </head>
+  <body class="container">
+    <header>
+        <% include ./partials/header %>
+    </header>
+
+    <main>
+      <div id="input" class="jumbotron">
+				<form id="grf_correlation" role="form">
+				<label for="name">Correlate Google ranking with ahrefs metrics</label></br>
+				  <textarea id="keywords" class="form-control" rows="5" placeholder="Enter keywords..." title="To analyze correlation for multiple keywords, enter one keyword or phrase per line" required></textarea></br>
+				  <button type="submit" class="btn btn-primary">Submit</button>
+				  <button type="reset" class="btn btn-danger">Clear</button>
+				</form>
+      </div>
+	    <div id="output" class="hide" >
+        </br>
+        <label for="name">Correlation of GRF with ahrefs metrics</label></br>
+        <div class="table-responsive">
+          <table id="correlation-table" class="table table-striped table-bordered table-condensed">
+            <thead class="text-center">
+            </thead>
+            <!--
+            <tfoot class="text-center">
+            </tfoot>
+            -->   
+            <tbody>
+            </tbody>
+          </table>
+        </div>  
+        <div id="overlay">
+          <img src="/images/ajax-loader.gif" id="img-load" />
+        </div>
+      </div>
+    </main>
+
+    <footer>
+        <% include ./partials/footer %>
+    </footer>
+
+    <!-- Dialogs / Popup forms -->
+    <div class="modal-form modal fade" id="error-form" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+          	<b> Speculate GRF </b>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div class="clear"></div>
+          </div>
+          <div class="modal-body">
+            <div id="error" class="popover-form">
+            	<div id="msg">
+              <p align="justify" style="color: #333"</p></br>
+              </div>
+              <input id="error-btn" type="button" class="btn btn-primary" data-dismiss="modal" value="Ok" />
+              <div class="clear"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  	<script type="text/javascript" src="/javascripts/clientapp.js"></script>
+  </body>
+</html>
