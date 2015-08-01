@@ -64,6 +64,12 @@ function init() {
         return false;
       }
     }
+    if(keywordList.length === 0) {
+      $('#output').addClass('hide');
+      $('#correlation-table').addClass('hide');
+      $("#overlay").fadeOut();
+      return;
+    }
     get(API_GRF_CORRELATION + '?keywordList=' + JSON.stringify(keywordList), function(err, data) {
       if(err) {
         $("#overlay").fadeOut();
@@ -89,8 +95,8 @@ function init() {
       var tableHeaderHTML = '<tr><th>Keywords</th>';
       for (var i = 0; i < keywordList.length; i++) {
         var valid = false;
-        for (var property in data.correlation[keywordList[i]) {
-          if(obj.hasOwnProperty(prop)) {
+        for (var property in data.correlation[keywordList[i]]) {
+          if(data.correlation[keywordList[i]].hasOwnProperty(property)) {
             valid = true;
             break;
           }
