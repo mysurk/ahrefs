@@ -24,6 +24,7 @@ router.get('/', function(req, res, next) {
   keywordsProcessed = 0;
   var correlation = {};
 	ee.on('correlation_done', consolidateCorrelation);
+	// var startGatheringInfo = process.hrtime();
   for (var i = 0; i < keywordList.length; i++) {
 		getGoogleResults(keywordList[i], correlateWithAhrefs);
   	console.log('Requested for google search results for keyword: ' + keywordList[i]);
@@ -41,7 +42,7 @@ router.get('/', function(req, res, next) {
 
   function getGoogleResults(keyword, callback) {
 		customsearch.cse.list({ cx: CX, q: keyword, auth: API_KEY }, function(err, resp) {
-		  if (err) {
+		  if(err) {
 		    console.log('Error getting google search: ', err);
 		    callback(err, keyword, []);
 		    return;
@@ -73,9 +74,11 @@ router.get('/', function(req, res, next) {
   	console.log('Received google search results for keyword: ' + keyword);
   	var metricTable = {};
   	var linksProcessed = 0;
+  	var linkErrors = [];
   	for (var i = 0; i < links.length; i++) {
+  		linkErrors[i] = false;
   		(function(i) {
-  			var link = AHREFS_URL + encodeURIComponent(links[i]) + AHREFS_QUERY;
+  			var link = AHREFS_URL + encodeURIComponent(encodeURI(links[i])) + AHREFS_QUERY;
 		    var req = request.get(link, function(err, response, body) {
 		      if(err) {
 			  		console.log('Error getting ahrefs metrics: ' + JSON.stringify(err, null, 2));
@@ -86,8 +89,9 @@ router.get('/', function(req, res, next) {
 		      var body = JSON.parse(body);
 		      var metrics = body.metrics;
 		      if(!metrics) {
-			  		console.log('ahrefs metrics is null or undefined: ' + metrics);
-			  		ee.emit('correlation_done', keyword, {});
+		      	linkErrors[i] = true;
+			  		console.log('ahrefs metrics is null or undefined, body is : ' + 
+			  																											JSON.stringify(body, null, 2));
 			  		return;
 		      }
 		      var metricNames = Object.keys(metrics);
@@ -99,13 +103,32 @@ router.get('/', function(req, res, next) {
 		      	metricTable[metricName][i] = metrics[metricName];
 		      }
 		      if(linksProcessed === links.length) {
-		      	var metricNames = Object.keys(metricTable);
+				    // var delta = process.hrtime(startGatheringInfo);
+				    // var deltaInMilSec = (delta[1] + delta[0] * 1e9) / 1e6;
+				    // console.log('Time taken to collect information from Google and ahrefs: ' + deltaInMilSec);
+
 		      	// Find correlation
+		      	var metricNames = Object.keys(metricTable);
+		      	// console.log(JSON.stringify(metricTable, null, 2));
 		      	var correlationPerMetric = {};
+		      	for (var j = 0; j< linkErrors.length; j++) {
+		      		if(linkErrors[j] === true) {
+		      			console.log('Keyword: ' + keyword);
+		      			console.log('Error getting ahrefs metrics: ' + links[j]);
+		      		}
+		      	}
 		      	for (var j = 0; j < metricNames.length; j++) {
 		      		var metricName = metricNames[j];
 		      		var unsorted = [];
 		      		for (var k = 0; k < metricTable[metricName].length; k++) {
+		      			if(linkErrors[k] === true) {
+		      				metricTable[metricName].splice(k, 1);
+		      				k--;
+		      				continue;
+		      			}
+		      			if(!metricTable[metricName][k]) {
+		      				metricTable[metricName][k] = 0;
+		      			}
 		      			unsorted[k] = metricTable[metricName][k];
 		      		}
 							metricTable[metricName].sort(function(a,b){return b - a});

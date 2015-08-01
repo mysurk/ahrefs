@@ -11,8 +11,6 @@ function get(endpoint, callback) {
       callback(null, data); 
     },
     error: function (xhr, ajaxOptions, err) {
-      err.xhr = xhr;
-      err.ajaxOptions = ajaxOptions;
       callback(err, null);
     }
   });
@@ -70,8 +68,6 @@ function init() {
       if(err) {
         $("#overlay").fadeOut();
         $('#output').addClass('hide');
-        console.log(xhr.url);
-        console.log(xhr.status);
         var msg = 'Oops, somthing went wrong at the server. Please refresh the page.';
         $('#error-form #error #msg p').text(msg);
         $('#error-form').modal('show');
@@ -88,9 +84,22 @@ function init() {
       // $('#error-form #error #msg p').text(data.message);
       // $('#error-form').modal('show');
       console.log('Got the grf_correlation');
+      // console.log(JSON.stringify(data.correlation, null, 2));
       var table = $('#output #correlation-table');
       var tableHeaderHTML = '<tr><th>Keywords</th>';
-      var tableHeaders = Object.keys(data.correlation[keywordList[0]]);
+      for (var i = 0; i < keywordList.length; i++) {
+        var valid = false;
+        for (var property in data.correlation[keywordList[i]) {
+          if(obj.hasOwnProperty(prop)) {
+            valid = true;
+            break;
+          }
+        }
+        if(valid === true) {
+          break;
+        }
+      }
+      var tableHeaders = Object.keys(data.correlation[keywordList[i]]);
       for (var i = 0; i < tableHeaders.length; i++) {
         var tableHeader = tableHeaders[i];
         tableHeaderHTML += '<th>' + tableHeader + '</th>';
@@ -104,7 +113,12 @@ function init() {
         tableRowsHTML += '<td class="text-center">' + keywordList[i] + '</td>';
         for (var j = 0; j < tableHeaders.length; j++) {
           tableRowsHTML += '<td class="text-right">';
-          tableRowsHTML += Math.round(data.correlation[keywordList[i]][tableHeaders[j]] * 100) / 100;
+          if(data.correlation[keywordList[i]][tableHeaders[j]] != null) {
+            tableRowsHTML += Math.round(data.correlation[keywordList[i]][tableHeaders[j]] * 100) / 100;            
+          } else {
+            data.correlation[keywordList[i]][tableHeaders[j]] = 'Unknown';
+            tableRowsHTML += data.correlation[keywordList[i]][tableHeaders[j]];
+          }
           tableRowsHTML += '</td>';
         }
         tableRowsHTML += '</tr>';
@@ -113,7 +127,6 @@ function init() {
 
       $("#overlay").fadeOut();
       $('#correlation-table').removeClass('hide');
-      console.log(JSON.stringify(data.correlation, null, 2));
     });
   });
 
