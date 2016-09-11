@@ -1,4 +1,3 @@
-# ahrefs
 Correlating google ranking function with ahrefs metrics
 
 1. Install node.js from https://nodejs.org/ (Tested for node.js version 0.10.37)
